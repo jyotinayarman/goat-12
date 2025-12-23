@@ -40,6 +40,8 @@ git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057
 # Diffusers from GitHub
 git+https://github.com/huggingface/diffusers
 
+para-attn>=0.3.38
+
 # ReconViaGen additional dependencies
 trimesh==4.5.3
 xatlas==0.0.9
@@ -52,9 +54,12 @@ rembg==2.0.60
 onnxruntime==1.20.1
 einops==0.8.1
 lpips==0.1.4
-xformers==0.0.27.post2
+# xformers>=0.0.28  # Compatible with torch 2.7.1
 
-# Critical ReconViaGen wheels
-https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.0.post2/flash_attn-2.7.0.post2+cu12torch2.4cxx11abiFALSE-cp311-cp311-linux_x86_64.whl
-https://huggingface.co/spaces/JeffreyXiang/TRELLIS/resolve/main/wheels/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl?download=true
-https://huggingface.co/spaces/JeffreyXiang/TRELLIS/resolve/main/wheels/nvdiffrast-0.3.3-cp311-cp311-linux_x86_64.whl?download=true
+# Critical ReconViaGen wheels - Python 3.11 compatible
+# Flash Attention - cp311 wheel available (will be installed separately in Dockerfile)
+# Note: Flash attention is installed in Dockerfile line 64 with correct version for torch 2.7
+
+# diff_gaussian_rasterization and nvdiffrast - will be built from source in Dockerfile
+# These packages require CUDA compilation and torch to be installed first
+# See Dockerfile for installation steps after torch is installed
