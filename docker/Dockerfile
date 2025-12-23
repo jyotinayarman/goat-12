@@ -60,8 +60,26 @@ COPY docker/requirements.txt /tmp/requirements.txt
 # Install basic dependencies from requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
-# Install flash-attn 2.8.2 prebuilt wheel for PyTorch 2.7 + Python 3.10 + CUDA 12.8
+# Install flash-attn 2.8.3 prebuilt wheel for PyTorch 2.7 + Python 3.11 + CUDA 12.8
 RUN pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.7cxx11abiFALSE-cp311-cp311-linux_x86_64.whl
+
+# Install CUDA toolkit via conda (needed for building CUDA extensions)
+RUN conda install -c nvidia cuda-toolkit=12.8 -y
+
+# Build diff_gaussian_rasterization from source (cp311 wheels not available)
+# Set CUDA_HOME to conda prefix for building
+ENV CUDA_HOME=/opt/conda
+RUN git clone https://github.com/ashawkey/diff-gaussian-rasterization.git /tmp/diff-gaussian && \
+    cd /tmp/diff-gaussian && \
+    git submodule update --init --recursive && \
+    pip install --no-build-isolation . && \
+    rm -rf /tmp/diff-gaussian
+
+# Build nvdiffrast from source (cp311 wheels not available)
+RUN git clone https://github.com/NVlabs/nvdiffrast.git /tmp/nvdiffrast && \
+    cd /tmp/nvdiffrast && \
+    pip install --no-build-isolation . && \
+    rm -rf /tmp/nvdiffrast
 
 # Install SPZ
 RUN wget https://github.com/404-Repo/spz/releases/download/v.0.1.2/pyspz-wheels-ubuntu-latest.zip && \
