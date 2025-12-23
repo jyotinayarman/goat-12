@@ -1,0 +1,60 @@
+# PyTorch i torchvision 
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1
+torchvision==0.22.1
+torchaudio==2.7.1
+
+# Numpy (version <2 for compatibility with BiRefNet)
+numpy<2
+
+# Basic dependencies
+pillow==11.3.0
+tqdm==4.67.1
+opencv-python-headless
+easydict==1.13
+scipy==1.16.3
+pydantic==2.12.5
+pydantic-settings==2.12.0
+pydantic-tensor==0.2.0
+spconv-cu126==2.3.8
+
+
+# Transformers i AI
+transformers==4.55.4
+peft==0.18.0
+accelerate==1.12.0
+
+# BiRefNet dependencies
+timm==1.0.22
+kornia==0.8.2
+
+# FastAPI and web
+fastapi==0.123.7
+uvicorn[standard]
+python-multipart
+loguru==0.7.3
+
+# Utils3d from GitHub
+git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8
+
+# Diffusers from GitHub
+git+https://github.com/huggingface/diffusers
+
+# ReconViaGen additional dependencies
+trimesh==4.5.3
+xatlas==0.0.9
+pyvista==0.44.2
+pymeshfix==0.17.0
+igraph==0.11.8
+imageio==2.36.1
+imageio-ffmpeg==0.5.1
+rembg==2.0.60
+onnxruntime==1.20.1
+einops==0.8.1
+lpips==0.1.4
+xformers==0.0.27.post2
+
+# Critical ReconViaGen wheels
+https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.0.post2/flash_attn-2.7.0.post2+cu12torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+https://huggingface.co/spaces/JeffreyXiang/TRELLIS/resolve/main/wheels/diff_gaussian_rasterization-0.0.0-cp310-cp310-linux_x86_64.whl?download=true
+https://huggingface.co/spaces/JeffreyXiang/TRELLIS/resolve/main/wheels/nvdiffrast-0.3.3-cp310-cp310-linux_x86_64.whl?download=true
