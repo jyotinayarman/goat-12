@@ -68,21 +68,23 @@ RUN conda install -c nvidia cuda-toolkit=12.8 -y
 
 # Build diff_gaussian_rasterization from source (cp311 wheels not available)
 # Set CUDA_HOME to conda prefix for building
-ENV CUDA_HOME=/opt/conda
+# ENV CUDA_HOME=/opt/conda
 RUN git clone https://github.com/ashawkey/diff-gaussian-rasterization.git /tmp/diff-gaussian && \
     cd /tmp/diff-gaussian && \
     git submodule update --init --recursive && \
     pip install --no-build-isolation . && \
     rm -rf /tmp/diff-gaussian
-
-# Build nvdiffrast from source (cp311 wheels not available)
-RUN git clone https://github.com/NVlabs/nvdiffrast.git /tmp/nvdiffrast && \
-    cd /tmp/nvdiffrast && \
+    
+RUN cd /workspace; \
+    rm -rf nvdiffrast; \
+    git clone https://github.com/NVlabs/nvdiffrast.git /tmp/nvdiffrast; \
+    cd /tmp/nvdiffrast; \
     pip install --no-build-isolation . && \
     rm -rf /tmp/nvdiffrast
 
 # Install SPZ
-RUN wget https://github.com/404-Repo/spz/releases/download/v.0.1.2/pyspz-wheels-ubuntu-latest.zip && \
+RUN cd /workspace; \
+    wget https://github.com/404-Repo/spz/releases/download/v.0.1.2/pyspz-wheels-ubuntu-latest.zip && \
     unzip pyspz-wheels-ubuntu-latest.zip && \
     pip install pyspz-1.0.0-cp311-cp311-manylinux_2_34_x86_64.whl && \
     rm -rf pyspz-wheels-ubuntu-latest.zip *.whl
@@ -93,8 +95,28 @@ RUN pip install -e "git+https://github.com/PramaLLC/BEN2.git#egg=ben2"
 # Set working directory
 WORKDIR /workspace
 
-# Copy the project
+# Copy the project (includes ReconViaGen components in libs/)
 COPY pipeline_service /workspace
+
+RUN set -eux; \
+    linked=0; \
+    # Case 1: everything copied into /workspace (like the contest image)
+    if [ -d /workspace/libs/trellis ]; then \
+        cd /workspace; \
+        ln -sf . libs/trellis/trellis || echo "WARNING: ln failed in /workspace"; \
+        echo "Linked trellis/trellis from /workspace"; \
+        linked=1; \
+    fi; \
+    # Case 2: project kept under /workspace/pipeline_service
+    if [ "$linked" -eq 0 ] && [ -d /workspace/pipeline_service/libs/trellis ]; then \
+        cd /workspace/pipeline_service; \
+        ln -sf . libs/trellis/trellis || echo "WARNING: ln failed in /workspace/pipeline_service"; \
+        echo "Linked trellis/trellis from /workspace/pipeline_service"; \
+        linked=1; \
+    fi; \
+    if [ "$linked" -eq 0 ]; then \
+        echo "WARNING: trellis libs not found in expected locations, skipping symlink"; \
+    fi
 
 EXPOSE 10006
 CMD ["python",  "serve.py"]
